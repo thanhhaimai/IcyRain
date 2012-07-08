@@ -3,6 +3,7 @@ package mai.icyrain.bluetooth;
 import java.util.UUID;
 
 import mai.icyrain.IcyRain;
+import mai.icyrain.MessageOpCode;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -123,7 +124,7 @@ public class BluetoothService {
    * @param data The bytes to write
    * @see ConnectedThread#write(byte[])
    */
-  public void write(byte[] data, int opCode) {
+  public void write(byte[] data, MessageOpCode opCode) {
     // Create temporary object
     ConnectedThread r;
     // Synchronize a copy of the ConnectedThread
@@ -134,7 +135,7 @@ public class BluetoothService {
       r = mConnectedThread;
     }
     // Perform the write unsynchronized
-    r.write(data, opCode);
+    r.write(data, opCode.ordinal());
   }
 
   /**

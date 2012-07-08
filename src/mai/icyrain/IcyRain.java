@@ -89,8 +89,8 @@ public class IcyRain extends Activity {
         final byte[] readBuf = (byte[]) msg.obj;
         // construct a string from the valid bytes in the buffer
         final String readMessage = new String(readBuf, 0, msg.arg1);
-        mConversationArrayAdapter.add(mConnectedDeviceName + ": opCode " + msg.arg2 + ", msg "
-          + readMessage);
+        mConversationArrayAdapter.add(mConnectedDeviceName + ": "
+          + MessageOpCode.values()[msg.arg2].name() + ": " + readMessage);
         break;
       case HandlerMessage.DEVICE_NAME:
         // save the connected device's name
@@ -305,7 +305,7 @@ public class IcyRain extends Activity {
     if (message.length() > 0) {
       // Get the message bytes and tell the BluetoothService to write
       final byte[] send = message.getBytes();
-      mBluetoothService.write(send, 10);
+      mBluetoothService.write(send, MessageOpCode.ECHO);
 
       // Reset out string buffer to zero and clear the edit text field
       mOutStringBuffer.setLength(0);

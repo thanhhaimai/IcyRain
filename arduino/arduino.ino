@@ -1,4 +1,6 @@
+
 // Included for serial communication
+
 #include "BluetoothService.h"
 
 #include <SoftwareSerial.h>
@@ -11,6 +13,14 @@
 // Create an instance of the software serial obj
 SoftwareSerial bluesmirf(RXPIN, TXPIN);
 BluetoothService bluetooth(&bluesmirf);
+
+enum MessageOpCode {
+  ECHO = 0,
+  SERIAL_PRINT = 1,
+  VIBRATE = 3,
+  SET_SENSOR_STATE = 4,
+  QUERY = 5,
+};
 
 // Main application entry point 
 void setup()
@@ -43,17 +53,24 @@ void loop()
 
 void handleMessage(Message* message) {
   switch(message->opCode) {
-    case 10:
-      // lets say opCode 10 is the echo service, just echo back
+    case ECHO:
       bluetooth.sendMessage(message);
       break;
-    case 9:
-      // lets say opCode 9 is the print out service, just print back into serial monitor
+    case SERIAL_PRINT:
       Serial.print("Receiving: ");
       for (int i = 0; i < message->size; i++) {
         Serial.print((char) message->data[i]);
       }
       Serial.println();
+      break;
+    case VIBRATE:
+      // do vibrate
+      break;
+    case SET_SENSOR_STATE:
+      // do set sensor state
+      break;
+    case QUERY:
+      // return data for the query
       break;
     default:
       break;

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/container"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+   	<RelativeLayout
+   		android:id="@+id/headerLayout"
+   		android:layout_width="fill_parent" 
+       	android:layout_height="wrap_content"> 
+       	
+       	<RelativeLayout
+			android:id="@+id/directionsForm"
+   			android:layout_width="fill_parent" 
+       		android:layout_height="wrap_content">
+       		
+       		<EditText
+       			android:id="@+id/startTextView" 
+				android:layout_width="fill_parent" 
+           		android:layout_height="wrap_content"  
+           		android:hint="Littleton, CO"
+           		android:textSize="16dip"/>
+
+           	<EditText
+       			android:id="@+id/endTextView" 
+				android:layout_width="fill_parent" 
+           		android:layout_height="wrap_content" 
+           		android:hint="Steamboat Springs, CO"
+           		android:textSize="16dip"
+           		android:layout_below="@id/startTextView"/>
+       		
+       		<Button 
+       			android:id="@+id/createRouteButton" 
+           		android:layout_width="wrap_content" 
+           		android:layout_height="wrap_content" 
+           		android:text="Create Route"
+           		android:layout_below="@id/endTextView"/> 
+            
+            <Button 
+            	android:id="@+id/clearButton" 
+            	android:layout_width="wrap_content" 
+            	android:layout_height="wrap_content"
+            	android:layout_below="@id/endTextView" 
+            	android:layout_toRightOf="@id/createRouteButton"
+            	android:text="Clear Route" 
+            	android:visibility="gone"
+            />	
+           
+		</RelativeLayout>
+	</RelativeLayout>
+     	
+	<RelativeLayout
+   		android:id="@+id/itineraryLayout"
+   		android:layout_width="fill_parent" 
+       	android:layout_height="fill_parent"> 
+
+		<WebView
+			android:id="@+id/itinerary"
+			android:layout_width="fill_parent" 
+       		android:layout_height="fill_parent"
+       		android:visibility="gone"
+		/>
+				
+	</RelativeLayout>
+	
+
+</LinearLayout>

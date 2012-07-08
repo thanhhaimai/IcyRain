@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/container"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:mq="http://schemas.mapquest.com/apk/res/mapquest">
+    <!--  don't forget to add the namespace mapping in your  layout --> 
+    
+    <!--  To use osm tiles remove android:apiKey attribute-->
+    <com.mapquest.android.maps.MapView
+	    android:id="@+id/map"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:clickable="true"
+	    android:enabled="true"
+	    android:apiKey="@string/api_key" 
+		>
+		<!--  You cannot set alignment options here, that need to be set programmatically -->
+		<!--  A view positioned relative to the map, -->
+		<ImageView android:layout_alignParentBottom="true"
+			android:layout_height="wrap_content" android:id="@+id/viewRelativeToMap"
+			android:layout_width="wrap_content" android:src="@drawable/location_marker"
+			 mq:geoPoint="39,-103"/>
+		<!--  A view positioned relative to MapView, -->
+		<ImageView android:layout_alignParentBottom="true"
+			android:layout_height="wrap_content" android:id="@+id/viewRelativeToMapView"
+			android:layout_width="wrap_content" android:src="@drawable/icon"
+			 mq:x="50" mq:y="50"/>
+	</com.mapquest.android.maps.MapView>
+    
+</RelativeLayout>

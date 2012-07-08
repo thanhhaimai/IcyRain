@@ -23,6 +23,8 @@ import com.mapquest.android.maps.ServiceResponse.Info;
  * itinerary
  */
 public class RouteItineraryDemo extends SimpleMap {
+	
+	protected Boolean useOnPhone = false;
 
 	@Override
 	protected int getLayoutId() {
@@ -118,18 +120,15 @@ public class RouteItineraryDemo extends SimpleMap {
 				itineraryLayout.setVisibility(View.GONE);
 			}
 		});
-		
+
 		/*
-		// attach the set time listener
-		setTime.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				DialogFragment newFragment = new TimePickerFragment();
-				newFragment.show(this., "timePicker");
-			}
-		});
-		*/
-			
+		 * // attach the set time listener setTime.setOnClickListener(new
+		 * View.OnClickListener() {
+		 * 
+		 * @Override public void onClick(View v) { DialogFragment newFragment =
+		 * new TimePickerFragment(); newFragment.show(this., "timePicker"); }
+		 * });
+		 */
 
 		// create an onclick listener for the instructional text
 		createRouteButton.setOnClickListener(new View.OnClickListener() {
@@ -139,66 +138,105 @@ public class RouteItineraryDemo extends SimpleMap {
 				createRouteButton.setEnabled(false);
 				Log.d("location", "hello there");
 
-				// PULL put current location here
-				// myLocationOverlay.enableMyLocation();
-				/*
-				 * myLocationOverlay.runOnFirstFix(new Runnable() {
-				 * 
-				 * @Override public void run() {
-				 */
-				// final GeoPoint currentLocation = myLocationOverlay
-				// .getMyLocation();
-				Log.d("Location", "Running");
-				final GeoPoint currentLocation = new GeoPoint(32.9102789,
-						-117.1616412);
-				Log.d("location", currentLocation.getLatitude() + ", "
-						+ currentLocation.getLongitude());
-				mapView.getController().animateTo(currentLocation);
-				mapView.getController().setZoom(14);
-				//mapView.getOverlays().add(myLocationOverlay);
-				//myLocationOverlay.setFollowing(true);
-				Geocoder geocoder = new Geocoder(getBaseContext());
-				double latitude = currentLocation.getLatitude();
-				double longitude = currentLocation.getLongitude();
-				List<Address> locations = null;
-				Address location = null;
+				if (useOnPhone) {
+					myLocationOverlay.enableMyLocation();
 
-				Log.d("location", "HELLO");
+					myLocationOverlay.runOnFirstFix(new Runnable() {
 
-				try {
-					locations = geocoder
-							.getFromLocation(latitude, longitude, 1);
-					location = locations.get(0);
-				} catch (Exception e) {
-					Log.d("location", e.toString());
-				}
-
-				String startAt = "San Francisco";
-				if (location != null) {
-					final String propLoc = location.getAddressLine(0) + ", " + location.getAddressLine(1) + ", " + location.getPostalCode();
-					/*
-					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							final GeoPoint currentLocation = myLocationOverlay
+									.getMyLocation();
 
-							start.setText(propLoc);
+							mapView.getController().animateTo(currentLocation);
+							mapView.getController().setZoom(14);
+							mapView.getOverlays().add(myLocationOverlay);
+							myLocationOverlay.setFollowing(true);
+
+							Geocoder geocoder = new Geocoder(getBaseContext());
+							double latitude = currentLocation.getLatitude();
+							double longitude = currentLocation.getLongitude();
+							List<Address> locations = null;
+							Address location = null;
+
+							try {
+								locations = geocoder.getFromLocation(latitude,
+										longitude, 1);
+								location = locations.get(0);
+							} catch (Exception e) {
+								Log.d("location", e.toString());
+							}
+
+							String startAt = "Berkeley"; // Default location
+
+							if (location != null) {
+								final String propLoc = location
+										.getAddressLine(0)
+										+ ", "
+										+ location.getAddressLine(1)
+										+ ", "
+										+ location.getPostalCode();
+								runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										start.setText(propLoc);
+									}
+								});
+
+								startAt = propLoc;
+							}
+							Log.d("location", "HELLO");
+							Log.d("location", startAt);
+							String endAt = getText(end);
+
+							routeManager.createRoute(startAt, endAt);
 						}
 					});
-					*/
-					Log.d("location", propLoc);
-					startAt = propLoc;
+				} else {
+					final GeoPoint currentLocation = new GeoPoint(32.9102789,
+							-117.1616412);
+					mapView.getController().animateTo(currentLocation);
+					mapView.getController().setZoom(14);
+
+					Geocoder geocoder = new Geocoder(getBaseContext());
+					double latitude = currentLocation.getLatitude();
+					double longitude = currentLocation.getLongitude();
+					List<Address> locations = null;
+					Address location = null;
+
+					try {
+						locations = geocoder.getFromLocation(latitude,
+								longitude, 1);
+						location = locations.get(0);
+					} catch (Exception e) {
+						Log.d("location", e.toString());
+					}
+
+					String startAt = "Berkeley"; // Default location
+
+					if (location != null) {
+						final String propLoc = location
+								.getAddressLine(0)
+								+ ", "
+								+ location.getAddressLine(1)
+								+ ", "
+								+ location.getPostalCode();
+
+						startAt = propLoc;
+					}
+					
+					Log.d("location", "HELLO");
+					Log.d("location", startAt);
+					String endAt = getText(end);
+
+					routeManager.createRoute(startAt, endAt);
 				}
-				Log.d("location", "HELLO");
-				Log.d("location", startAt);
-				// String endAt = getText(end);
-				String endAt = "Berkeley";
-
-				routeManager.createRoute(startAt, endAt);
-				// }
-				// });
-
 			}
 		});
 
+	}
+
+	protected int setupMap(GeoPoint location, Boolean useOnPhone) {
+		return 2;
 	}
 }

@@ -16,25 +16,30 @@ typedef unsigned int u32;
 
 // Create an instance of the software serial obj
 SoftwareSerial bluesmirf(RXPIN, TXPIN);
+
+// uncomment the following line if you want to use the Hardware Serial port
+// BluetoothService bluetooth(&Serial);
 BluetoothService bluetooth(&bluesmirf);
+
 
 static struct Message idle_msg;
 
+/* motor_id => PIN number */
 const short motor_map[] = {
-	/* motor_id => PIN number */
-	0,
-	1,
-	2,
-	3,
-	4,
-	5,
-	6,
-	7,
-	8,
-	9,
-	10,
-	11,
-	12,
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+
+  9,
+  10,
+  11,
+  12,
 };
 
 // Main application entry point 
@@ -76,11 +81,9 @@ void loop()
 
   // Let the server know we're free
   bluetooth.sendMessage(&idle_msg);
-
-  delay(100);
 }
 
-void send_vibrate(u8 motor_id, u8 magnitude) {
+void send_vibrate(unsigned char motor_id, unsigned char magnitude) {
   short pin_nr = motor_map[motor_id];
   analogWrite(pin_nr, magnitude);
 }
@@ -95,9 +98,8 @@ void vibrate(Message* msg) {
    */
 
   byte* field = msg->data;
-  #define FIELD_GET(_lhs, _type) \
-    _type _lhs = *((_type*) field); \
-    field = field + sizeof(_type); \
+  #define FIELD_GET(_lhs, _type) _type _lhs = *((_type*) field); field = field + sizeof(_type);
+
 
   FIELD_GET(duration, u32);
   FIELD_GET(nr_motors, u8);
@@ -106,9 +108,9 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-    send_vibrate(motor_id, vibrate);
+    send_vibrate(motor_id, magnitude);
   }
-  
+
   delay(duration);
 
   field = motor_tuples;
@@ -116,35 +118,36 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-    send_vibrate(motor_id, 0);
+    send_vibrate(motor_id, magnitude);
   }
-  
-  #undef FIELD_GET
+
+#undef FIELD_GET
 }
 
 void handleMessage(Message* message) {
   switch(message->opCode) {
-    case ECHO:
-      bluetooth.sendMessage(message);
-      break;
-    case SERIAL_PRINT:
-      Serial.print("Receiving: ");
-      for (int i = 0; i < message->size; i++) {
-        Serial.print((char) message->data[i]);
-      }
-      Serial.println();
-      break;
-    case VIBRATE:
-      // do vibrate
-      vibrate(message);
-      break;
-    case SET_SENSOR_STATE:
-      // do set sensor state
-      break;
-    case QUERY:
-      // return data for the query
-      break;
-    default:
-      break;
+  case ECHO:
+    bluetooth.sendMessage(message);
+    break;
+  case SERIAL_PRINT:
+    Serial.print("Receiving: ");
+    for (int i = 0; i < message->size; i++) {
+      Serial.print((char) message->data[i]);
+    }
+    Serial.println();
+    break;
+  case VIBRATE:
+    // do vibrate
+    vibrate(message);
+    break;
+  case SET_SENSOR_STATE:
+    // do set sensor state
+    break;
+  case QUERY:
+    // return data for the query
+    break;
+  default:
+    break;
   }
 }
+

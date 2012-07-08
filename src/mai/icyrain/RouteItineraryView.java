@@ -1,4 +1,4 @@
-package com.mapquest.android.samples;
+package mai.icyrain;
 
 import java.io.IOException;
 import java.io.InputStream;

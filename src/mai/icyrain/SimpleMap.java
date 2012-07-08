@@ -1,4 +1,4 @@
-package com.mapquest.android.samples;
+package mai.icyrain;
 
 import android.content.Context;
 import android.os.Bundle;

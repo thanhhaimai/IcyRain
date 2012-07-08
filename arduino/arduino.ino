@@ -80,7 +80,7 @@ void loop()
   delay(100);
 }
 
-void send_vibrate(u8 motor_id, u8 magnitude) {
+void send_vibrate(unsigned char motor_id, unsigned char magnitude) {
   short pin_nr = motor_map[motor_id];
   analogWrite(pin_nr, magnitude);
 }
@@ -106,7 +106,7 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-    send_vibrate(motor_id, vibrate);
+    send_vibrate(motor_id, magnitude);
   }
   
   delay(duration);
@@ -116,7 +116,7 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-    send_vibrate(motor_id, 0);
+    send_vibrate(motor_id, magnitude);
   }
   
   #undef FIELD_GET

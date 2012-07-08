@@ -20,6 +20,23 @@ BluetoothService bluetooth(&bluesmirf);
 
 static struct Message idle_msg;
 
+const short motor_map[] = {
+	/* motor_id => PIN number */
+	0,
+	1,
+	2,
+	3,
+	4,
+	5,
+	6,
+	7,
+	8,
+	9,
+	10,
+	11,
+	12,
+};
+
 // Main application entry point 
 void setup()
 
@@ -63,6 +80,11 @@ void loop()
   delay(100);
 }
 
+void send_vibrate(u8 motor_id, u8 magnitude) {
+  short pin_nr = motor_map[motor_id];
+  analogWrite(pin_nr, magnitude);
+}
+
 void vibrate(Message* msg) {
   /* Vibrate command format:
    *
@@ -84,9 +106,7 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-
-    // turn this motor on
-    // XXX
+    send_vibrate(motor_id, vibrate);
   }
   
   delay(duration);
@@ -96,9 +116,7 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-
-    // turn this motor off
-    // XXX
+    send_vibrate(motor_id, 0);
   }
   
   #undef FIELD_GET

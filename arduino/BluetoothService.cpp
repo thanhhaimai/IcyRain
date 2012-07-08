@@ -1,8 +1,8 @@
 #include "BluetoothService.h"
 
-BluetoothService::BluetoothService(SoftwareSerial* device) {
+BluetoothService::BluetoothService(Stream* stream) {
   message.data = (byte*) malloc(128);
-  bluetooth = device;
+  bluetooth = stream;
 }
 
 BluetoothService::~BluetoothService() {

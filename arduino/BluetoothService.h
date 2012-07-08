@@ -2,7 +2,6 @@
 #define __BLUETOOTHSERVICE_H__ 
 
 #include "Arduino.h"
-#include <SoftwareSerial.h>
 
 struct Message {
   byte opCode;
@@ -14,11 +13,11 @@ class BluetoothService {
 private:
   byte index;
   byte size;
-  SoftwareSerial* bluetooth;
+  Stream* bluetooth;
   Message message;
 
 public:
-  BluetoothService(SoftwareSerial* device);
+  BluetoothService(Stream* stream);
   ~BluetoothService();
   Message* getMessage();
   void sendMessage(Message* message);

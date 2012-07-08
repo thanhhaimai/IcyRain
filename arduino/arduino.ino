@@ -1,9 +1,13 @@
 
 // Included for serial communication
 
+#include "messages.h"
 #include "BluetoothService.h"
 
 #include <SoftwareSerial.h>
+
+typedef unsigned char u8;
+typedef unsigned int u32;
 
 // Define pins you're using for serial communication
 // for the BlueSMiRF connection
@@ -14,13 +18,7 @@
 SoftwareSerial bluesmirf(RXPIN, TXPIN);
 BluetoothService bluetooth(&bluesmirf);
 
-enum MessageOpCode {
-  ECHO = 0,
-  SERIAL_PRINT = 1,
-  VIBRATE = 3,
-  SET_SENSOR_STATE = 4,
-  QUERY = 5,
-};
+static struct Message idle_msg;
 
 // Main application entry point 
 void setup()
@@ -37,18 +35,73 @@ void setup()
 
   // Begin communicating with the bluetooth interface.
   bluesmirf.begin(9600);
+
+  // Initialize the "idle" message
+  idle_msg.opCode = IDLE;
+  idle_msg.size = 0;
+
+  // Might as well let the server know we're open for business
+  bluetooth.sendMessage(&idle_msg);
 }
 
 // Main application loop
 void loop()
 {
+  // Get sensor data
+  // XXX
+
   // Wait for command-line input
   Message* message = bluetooth.getMessage();
   if (message != NULL)
   {
     handleMessage(message);
   }
+
+  // Let the server know we're free
+  bluetooth.sendMessage(&idle_msg);
+
   delay(100);
+}
+
+void vibrate(Message* msg) {
+  /* Vibrate command format:
+   *
+   * [ le-u32:	duration ]
+   * [ u8:	nr_motors ]
+   * <[ u8:	motor_id]
+   * [ u8:	magnitude ]> (nr_motors)
+   */
+
+  byte* field = msg->data;
+  #define FIELD_GET(_lhs, _type) \
+    _type _lhs = *((_type*) field); \
+    field = field + sizeof(_type); \
+
+  FIELD_GET(duration, u32);
+  FIELD_GET(nr_motors, u8);
+  byte* motor_tuples = field;
+
+  for (byte i=0; i < nr_motors; ++i) {
+    FIELD_GET(motor_id, u8);
+    FIELD_GET(magnitude, u8);
+
+    // turn this motor on
+    // XXX
+  }
+  
+  delay(duration);
+
+  field = motor_tuples;
+
+  for (byte i=0; i < nr_motors; ++i) {
+    FIELD_GET(motor_id, u8);
+    FIELD_GET(magnitude, u8);
+
+    // turn this motor off
+    // XXX
+  }
+  
+  #undef FIELD_GET
 }
 
 void handleMessage(Message* message) {
@@ -65,6 +118,7 @@ void handleMessage(Message* message) {
       break;
     case VIBRATE:
       // do vibrate
+      vibrate(message);
       break;
     case SET_SENSOR_STATE:
       // do set sensor state

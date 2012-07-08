@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+   
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+ 	android:layout_height="wrap_content"
+ 	android:layout_alignParentTop="true"
+ 	android:background="#44000000"
+	>
+   	<RadioGroup android:id="@+id/controls"
+   		android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:layout_alignParentTop="true"
+   		android:layout_alignParentLeft="true"
+   		android:orientation="horizontal"
+   		android:paddingRight="5dip"
+   		>
+   		<RadioButton android:id="@+id/mapButton"
+   			android:text="Map"
+   			android:checked="true"
+   			 />
+   		<RadioButton android:id="@+id/satelliteButton"
+   			android:text="Satellite" />
+   	</RadioGroup>
+   	<ToggleButton android:id="@+id/labelsToggle"
+   		android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:textOn="Labels"
+   		android:textOff="Labels"
+   		android:layout_toRightOf="@id/controls"
+   		android:visibility="gone"
+   		android:layout_margin="2dip"
+   		android:checked="true"
+   		>
+   	</ToggleButton>
+   	<ToggleButton android:id="@+id/trafficToggle"
+   		android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:textOn="Traffic"
+   		android:textOff="Traffic"
+   		android:layout_alignParentRight="true"
+   		android:layout_margin="2dip"
+   		>
+   	</ToggleButton>
+</RelativeLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/container"
+	android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <include android:id="@+id/simple_osm_map" layout="@layout/simple_osm_map" />
+    <include android:id="@+id/geocode_form" layout="@layout/geocode_form" />
+    
+    
+</RelativeLayout>

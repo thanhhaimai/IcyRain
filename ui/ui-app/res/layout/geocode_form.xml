@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+   
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+   	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_weight="2"
+	android:layout_gravity="left" >
+	
+	<EditText android:id="@+id/mq_geocode_input" 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_weight="1"
+	android:layout_gravity="left" android:maxLines="1" android:inputType="textPostalAddress"/>
+	<Button android:id="@+id/mq_geocode_btn" 
+		android:text="Go"
+		android:layout_width="180dip"
+		android:layout_height="wrap_content"
+		android:layout_weight="2"
+		android:layout_gravity="right"/>
+</LinearLayout>
+     

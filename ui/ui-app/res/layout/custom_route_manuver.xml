@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dip"
+    android:background="#ffffff">
+
+   	<LinearLayout
+   		android:id="@+id/roadShieldContainer"
+   		android:layout_width="37dip"
+   		android:layout_height="wrap_content"
+   		android:paddingLeft="3dip"
+   		android:layout_alignParentLeft="true"
+   		android:background="#ffffff">
+   	</LinearLayout>
+   		
+   	<TextView
+   		android:id="@+id/distance"
+   		android:layout_width="30dip"
+   		android:layout_height="wrap_content"
+   		android:layout_alignParentRight="true"
+   		android:textSize="10sp"
+    	android:textColor="#000000"
+    	android:background="#ffffff"/>
+
+   	<TextView
+   		android:id="@+id/narrativeText"
+   		android:layout_width="fill_parent"
+   		android:layout_height="wrap_content"
+   		android:layout_toRightOf="@id/roadShieldContainer"
+   		android:layout_toLeftOf="@id/distance"
+   		android:layout_weight="1"
+   		android:textSize="13sp"
+   		android:padding="5dip"
+   		android:background="#ffffff"
+    	android:textColor="#000000"
+    	android:textStyle="bold"/>
+    	
+</RelativeLayout>

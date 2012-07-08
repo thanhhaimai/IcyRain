@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	android:name="Context Menu">
+	<item android:id="@+id/circleOverlay1"
+		android:title="Show Circle Overlay (Pixels)">
+	</item>
+	<item android:id="@+id/circleOverlay2"
+		android:title="Show Circle Overlay (Meters)">
+	</item>	
+	<item android:id="@+id/lineOverlay1"
+		android:title="Show Line Overlay">
+	</item>
+	<item android:id="@+id/lineOverlay2"
+		android:title="Show Line Overlay (with points)">
+	</item>
+</menu>

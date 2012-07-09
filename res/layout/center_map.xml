@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/container"
-	android:orientation="vertical"
+    android:id="@+id/container"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <include android:id="@+id/simple_osm_map" layout="@layout/simple_osm_map" />
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent"
- 		android:layout_height="wrap_content"
- 		android:layout_alignParentTop="true"
- 		android:background="#44000000"
-		>
+    <include
+        android:id="@+id/simple_osm_map"
+        layout="@layout/simple_osm_map" />
 
-   		<Button android:id="@+id/centerButton"
-   			android:layout_width="wrap_content"
-   			android:layout_height="wrap_content"
-			android:text="Set Center"
-   			android:layout_margin="2dip"
-   		>
-   		</Button>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#44000000" >
 
-	</RelativeLayout>    
+        <Button
+            android:id="@+id/centerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dip"
+            android:text="Set Center" >
+        </Button>
+    </RelativeLayout>
+
 </RelativeLayout>

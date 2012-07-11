@@ -35,6 +35,7 @@ Message* BluetoothService::getMessage() {
     byte checkSum = (byte) bluetooth->read();
     for (int i = 0; i < size; i++) {
       checkSum ^= message.data[i];
+      checkSum %= 48;
     }
 
     if (checkSum == size) {
@@ -60,6 +61,7 @@ void BluetoothService::sendMessage(Message* message) {
   byte checkSum = message->size;
   for (int i = 0; i < message->size; i++) {
     checkSum ^= message->data[i];
+    checkSum %= 48;
     bluetooth->write(message->data[i]);
   }
   bluetooth->write(checkSum);

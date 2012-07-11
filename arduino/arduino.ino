@@ -118,7 +118,7 @@ void vibrate(Message* msg) {
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
-    send_vibrate(motor_id, magnitude);
+    send_vibrate(motor_id, 0);
   }
 
 #undef FIELD_GET

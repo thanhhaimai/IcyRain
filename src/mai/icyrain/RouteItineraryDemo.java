@@ -1,5 +1,6 @@
 package mai.icyrain;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import mai.icyrain.bluetooth.BluetoothService;
@@ -11,7 +12,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +54,7 @@ public class RouteItineraryDemo extends SimpleMap {
   protected String mConnectedDeviceName = null;
 
   // The Handler that gets information back from the BluetoothService
-  private final Handler mHandler = new Handler() {
+  private final GestureHandler mHandler = new GestureHandler() {
     @Override
     public void handleMessage(Message msg) {
       switch (msg.what) {
@@ -76,11 +76,14 @@ public class RouteItineraryDemo extends SimpleMap {
         break;
       case HandlerMessage.WRITE:
         final byte[] writeBuf = (byte[]) msg.obj;
-        new String(writeBuf);
         break;
       case HandlerMessage.READ:
         final byte[] readBuf = (byte[]) msg.obj;
-        new String(readBuf, 0, msg.arg1);
+        ByteBuffer buffer = ByteBuffer.wrap(readBuf);
+        float p = buffer.getFloat();
+        float r = buffer.getFloat();
+        float y = buffer.getFloat();
+        UpdateData(p, r, y);
         break;
       case HandlerMessage.DEVICE_NAME:
         // save the connected device's name

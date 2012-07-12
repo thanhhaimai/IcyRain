@@ -62,7 +62,7 @@ public class RouteItineraryDemo extends SimpleMap {
       // pass in options
       routeManager.setOptions(options.toString());
     } catch (JSONException e) {
-      Log.d("pullLocation", "Issue with JSON options...");
+      Log.d("pullLocation", "Issue with JSON options.");
       e.printStackTrace();
     }
 
@@ -143,7 +143,6 @@ public class RouteItineraryDemo extends SimpleMap {
       public void onClick(View view) {
         hideSoftKeyboard(view);
         createRouteButton.setEnabled(false);
-        Log.d("pullLocation", "hello there");
 
         myLocationOverlay.enableMyLocation();
 
@@ -161,7 +160,6 @@ public class RouteItineraryDemo extends SimpleMap {
             final double latitude = currentLocation.getLatitude();
             final double longitude = currentLocation.getLongitude();
 
-            Log.d("pullLocation", "HELLO");
             final String startAt = "{latLng:{lat:" + latitude + ",lng:" + longitude + "}}";
             final String endAt = getText(end);
             Log.d("pullLocation", "startAt is " + startAt);

@@ -1,15 +1,18 @@
 package mai.icyrain;
 
-import java.util.List;
-
 import mai.icyrain.bluetooth.BluetoothService;
 import mai.icyrain.bluetooth.ConnectionState;
 import mai.icyrain.bluetooth.HandlerMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,7 +23,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.mapquest.android.Geocoder;
 import com.mapquest.android.maps.GeoPoint;
 import com.mapquest.android.maps.MapView;
 import com.mapquest.android.maps.MyLocationOverlay;
@@ -28,10 +30,6 @@ import com.mapquest.android.maps.RouteManager;
 import com.mapquest.android.maps.RouteResponse;
 import com.mapquest.android.maps.ServiceResponse.Info;
 
-/**
- * This demo is to give you and idea on how to implement customized route
- * itinerary
- */
 public class RouteItineraryDemo extends SimpleMap {
 
   private static final boolean D = true;
@@ -41,12 +39,15 @@ public class RouteItineraryDemo extends SimpleMap {
   private static final int REQUEST_CONNECT_DEVICE = 1;
   private static final int REQUEST_ENABLE_BT = 2;
   public static final String SMIRF_MAC = "00:06:66:45:02:5A";
+
   // Debugging
   private static final String TAG = "IcyRain";
   public static final String TOAST = "toast";
   protected MapView mapView;
+
   // Local Bluetooth adapter
   protected BluetoothAdapter mBluetoothAdapter = null;
+
   // Member object for the bluetooth services
   protected BluetoothService mBluetoothService = null;
 
@@ -97,6 +98,7 @@ public class RouteItineraryDemo extends SimpleMap {
   };
 
   protected MyLocationOverlay myLocationOverlay;
+  protected RouteLocationListener locationListener;
 
   protected EditText start;
   // README: set this to true to test on a real phone. Emu doesn't support
@@ -121,16 +123,28 @@ public class RouteItineraryDemo extends SimpleMap {
     final Button showItineraryButton = (Button) findViewById(R.id.showItineraryButton);
     final Button showMapButton = (Button) findViewById(R.id.showMapButton);
     final Button clearButton = (Button) findViewById(R.id.clearButton);
-    findViewById(R.id.setTime);
 
-    // PULL : current location
-    // start = (EditText) findViewById(R.id.startTextView);
     final EditText end = (EditText) findViewById(R.id.endTextView);
     final RouteItineraryView itinerary = (RouteItineraryView) findViewById(R.id.itinerary);
 
     final RouteManager routeManager = new RouteManager(this);
     routeManager.setMapView(this.mapView);
+    routeManager.setBestFitRoute(true);
+
+    // we want walking directions
+    JSONObject options = new JSONObject();
+    try {
+      options.put("routeType", "pedestrian");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    // pass in options
+    routeManager.setOptions(options.toString());
+
     routeManager.setDebug(true);
+
+    // callbacks for the routemanager
     routeManager.setRouteCallback(new RouteManager.RouteCallback() {
       @Override
       public void onError(RouteResponse routeResponse) {
@@ -151,6 +165,13 @@ public class RouteItineraryDemo extends SimpleMap {
           && showMapButton.getVisibility() == View.GONE) {
           showItineraryButton.setVisibility(View.VISIBLE);
         }
+
+        // listen for location changes
+        locationListener = new RouteLocationListener(routeResponse);
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 2, locationListener);
+
         itinerary.setRouteResponse(routeResponse);
         createRouteButton.setEnabled(true);
       }
@@ -192,21 +213,13 @@ public class RouteItineraryDemo extends SimpleMap {
       }
     });
 
-    /*
-     * // attach the set time listener setTime.setOnClickListener(new
-     * View.OnClickListener() {
-     * @Override public void onClick(View v) { DialogFragment newFragment =
-     * new TimePickerFragment(); newFragment.show(this., "timePicker"); }
-     * });
-     */
-
     // create an onclick listener for the instructional text
     createRouteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         hideSoftKeyboard(view);
         createRouteButton.setEnabled(false);
-        Log.d("location", "hello there");
+        Log.d("pullLocation", "hello there");
 
         myLocationOverlay.enableMyLocation();
 
@@ -221,33 +234,21 @@ public class RouteItineraryDemo extends SimpleMap {
             mapView.getOverlays().add(myLocationOverlay);
             myLocationOverlay.setFollowing(true);
 
-            final Geocoder geocoder = new Geocoder(getBaseContext());
             final double latitude = currentLocation.getLatitude();
             final double longitude = currentLocation.getLongitude();
-            List<Address> locations = null;
-            Address location = null;
 
-            try {
-              locations = geocoder.getFromLocation(latitude, longitude, 1);
-              location = locations.get(0);
-            } catch (final Exception e) {
-              Log.d("location", e.toString());
-            }
-
-            String startAt = "Berkeley"; // Default location
-
-            if (location != null) {
-              final String propLoc =
-                location.getAddressLine(0) + ", " + location.getAddressLine(1) + ", "
-                  + location.getPostalCode();
-
-              startAt = propLoc;
-            }
-            Log.d("location", "HELLO");
-            Log.d("location", startAt);
+            Log.d("pullLocation", "HELLO");
+            final String startAt = "{latLng:{lat:" + latitude + ",lng:" + longitude + "}}";
             final String endAt = getText(end);
+            Log.d("pullLocation", "startAt is " + startAt);
+            Log.d("pullLocation", "endAt is " + endAt);
 
-            routeManager.createRoute(startAt, endAt);
+            runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                routeManager.createRoute(startAt, endAt);
+              }
+            });
           }
         });
       }

@@ -91,6 +91,7 @@ public class RouteItineraryView extends RelativeLayout {
     if (locations.size() == 0) {
       return;
     }
+
     distanceUnit = "M".equals(route.options.unit) ? "mi" : "km";
     start.setText(route.locations.get(0).toString());
     end.setText(route.locations.get(route.locations.size() - 1).toString());
@@ -107,8 +108,11 @@ public class RouteItineraryView extends RelativeLayout {
       for (Leg leg : legs) {
         List<Maneuver> manuevers = leg.maneuvers;
         if (manuevers != null) {
+          int i = 1;
           for (Maneuver manuever : manuevers) {
             arrayAdapter.add(manuever);
+            // Log.d("location", "maneuver " + i + " is " + manuever.startPoint.toString());
+            i++;
           }
         }
       }

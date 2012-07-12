@@ -2,7 +2,16 @@ package mai.icyrain;
 
 import java.util.List;
 
+import mai.icyrain.bluetooth.BluetoothService;
+import mai.icyrain.bluetooth.ConnectionState;
+import mai.icyrain.bluetooth.HandlerMessage;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.location.Address;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +33,73 @@ import com.mapquest.android.maps.ServiceResponse.Info;
  */
 public class RouteItineraryDemo extends SimpleMap {
 
+  private static final boolean D = true;
+  // Debugging
+  private static final String TAG = "IcyRain";
+
+  public static final String SMIRF_MAC = "00:06:66:45:02:5A";
+  public static final String DEVICE_NAME = "device_name";
+  public static final String TOAST = "toast";
+  // Intent request codes
+  private static final int REQUEST_CONNECT_DEVICE = 1;
+  private static final int REQUEST_ENABLE_BT = 2;
+  // Local Bluetooth adapter
+  protected BluetoothAdapter mBluetoothAdapter = null;
+  // Member object for the bluetooth services
+  protected BluetoothService mBluetoothService = null;
+  // Name of the connected device
+  protected String mConnectedDeviceName = null;
+
   protected Boolean useOnPhone = false;
+
+  // README: set this to true to test on a real phone. Emu doesn't support bluetooth.
+  protected Boolean useBluetooth = false;
+
+  // The Handler that gets information back from the BluetoothService
+  private final Handler mHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+      case HandlerMessage.STATE_CHANGE:
+        if (D) {
+          Log.i(TAG, "HandlerMessage.STATE_CHANGE: " + msg.arg1);
+        }
+        final ConnectionState state = ConnectionState.values()[msg.arg1];
+        switch (state) {
+        case CONNECTED:
+          break;
+        case CONNECTING:
+          break;
+        case LISTEN:
+          break;
+        case IDLE:
+          break;
+        }
+        break;
+      case HandlerMessage.WRITE:
+        final byte[] writeBuf = (byte[]) msg.obj;
+        // construct a string from the buffer
+        final String writeMessage = new String(writeBuf);
+        break;
+      case HandlerMessage.READ:
+        final byte[] readBuf = (byte[]) msg.obj;
+        // construct a string from the valid bytes in the buffer
+        final String readMessage = new String(readBuf, 0, msg.arg1);
+        final MessageOpCode opCode = MessageOpCode.values()[msg.arg2];
+        break;
+      case HandlerMessage.DEVICE_NAME:
+        // save the connected device's name
+        mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+        Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName,
+          Toast.LENGTH_SHORT).show();
+        break;
+      case HandlerMessage.TOAST:
+        Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT)
+          .show();
+        break;
+      }
+    }
+  };
 
   @Override
   protected int getLayoutId() {
@@ -223,7 +298,59 @@ public class RouteItineraryDemo extends SimpleMap {
 
   }
 
-  protected int setupMap(GeoPoint location, Boolean useOnPhone) {
-    return 2;
+  @Override
+  protected void onStart() {
+    super.onStart();
+
+    // If BT is not on, request that it be enabled.
+    // setupBluetooth() will then be called during onActivityResult
+    if (!mBluetoothAdapter.isEnabled()) {
+      final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+      startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+      // Otherwise, setup the bluetooth session
+    } else {
+      if (mBluetoothService == null) {
+        setupBluetooth();
+      }
+    }
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (D) {
+      Log.d(TAG, "onActivityResult " + resultCode);
+    }
+    switch (requestCode) {
+    case REQUEST_CONNECT_DEVICE:
+      // When DeviceListActivity returns with a device to connect
+      if (resultCode == Activity.RESULT_OK) {
+        // Get the device MAC address
+        final String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        // Get the BLuetoothDevice object
+        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        mBluetoothService.connect(device);
+      }
+      break;
+    case REQUEST_ENABLE_BT:
+      // When the request to enable Bluetooth returns
+      if (resultCode == Activity.RESULT_OK) {
+        // Bluetooth is now enabled, so set up it up
+        setupBluetooth();
+      } else {
+        // User did not enable Bluetooth or an error occured
+        Log.d(TAG, "BT not enabled");
+        Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+        finish();
+      }
+    }
+  }
+
+  private void setupBluetooth() {
+    Log.d(TAG, "setupBluetooth()");
+
+    // Initialize the BluetoothService to perform bluetooth connections
+    mBluetoothService = BluetoothService.getInstance();
+    mBluetoothService.setDefaultHandler(mHandler);
   }
 }

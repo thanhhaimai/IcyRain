@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.location.Address;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -286,6 +287,20 @@ public class RouteItineraryDemo extends SimpleMap {
   }
 
   @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // Get local Bluetooth adapter
+    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+    // If the adapter is null, then Bluetooth is not supported
+    if (mBluetoothAdapter == null) {
+      Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+      finish();
+      return;
+    }
+  }
+
+  @Override
   protected void onStart() {
     super.onStart();
 
@@ -308,5 +323,25 @@ public class RouteItineraryDemo extends SimpleMap {
     // Initialize the BluetoothService to perform bluetooth connections
     mBluetoothService = BluetoothService.getInstance();
     mBluetoothService.setDefaultHandler(mHandler);
+  }
+
+  /**
+   * Sends a message.
+   * 
+   * @param message A string of text to send.
+   */
+  private void sendMessage(String message) {
+    // Check that we're actually connected before trying anything
+    if (mBluetoothService.getState() != ConnectionState.CONNECTED) {
+      Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    // Check that there's actually something to send
+    if (message.length() > 0) {
+      // Get the message bytes and tell the BluetoothService to write
+      final byte[] send = message.getBytes();
+      mBluetoothService.write(send, MessageOpCode.ECHO);
+    }
   }
 }

@@ -3,6 +3,8 @@
 import io
 import struct
 
+import time
+
 import serial
 
 def test_echo(op=0):
@@ -16,9 +18,9 @@ def test_print(op=1):
 def test_vibrate(op=3):
     buf = io.BytesIO()
     duration = 5000
-    buf.write(struct.pack('<I', duration))
+    buf.write(struct.pack('<H', duration))
     buf.write(struct.pack('B', 1)) # nr_motors
-    buf.write(struct.pack('B', 3)) # motor_id
+    buf.write(struct.pack('B', 6)) # motor_id
     buf.write(struct.pack('B', 255)) # magnitude
     send_message(op, buf)
 
@@ -45,7 +47,7 @@ def send_message(op, buf):
 
 def getbyte():
     u8 = conn.read(1)
-    print('GETB: ', u8)
+    print('GETB:', u8)
     if not len(u8):
         return 0
     else:
@@ -53,20 +55,53 @@ def getbyte():
 
 def once_ready(f):
     print('Waiting to receive IDLE state...')
-    while conn.inWaiting() < 3:
-        pass
-    if conn.read(3) == b'\x2F\x75\x06':
-        print('Calling ', f)
+    state = 0
+    opcode = None
+    while True:
+        u8 = getbyte()
+
+        if state == 0:
+            if u8 == 0x2F:
+                state = 1
+            else:
+                state = 0
+            continue
+
+        if state == 1:
+            if u8 == 0x75:
+                state = 2
+            else:
+                state = 0
+            continue
+
+        if state == 2:
+            opcode = u8
+            break
+
+    if opcode == 6:
+        print('Got IDLE, calling ', f)
         f()
-    else:
-        print('Got garbage.')
 
 def main():
     once_ready(test_echo)
     once_ready(test_print)
     once_ready(test_vibrate)
 
+def dump():
+    while True:
+        if conn.inWaiting():
+            print(conn.read(conn.inWaiting()))
+        time.sleep(1)
+
+def drain():
+    print('Draining input stream...')
+    for i in range(3):
+        time.sleep(1)
+        conn.read(conn.inWaiting())
+
 if __name__ == '__main__':
-    conn = serial.Serial('/dev/ttyUSB0')
+    conn = serial.Serial('/dev/ttyACM0')
+    drain()
     main()
+    dump()
     conn.close()

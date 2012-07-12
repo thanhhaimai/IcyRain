@@ -7,7 +7,7 @@
 #include <SoftwareSerial.h>
 
 typedef unsigned char u8;
-typedef unsigned int u32;
+typedef unsigned short u16;
 
 // Define pins you're using for serial communication
 // for the BlueSMiRF connection
@@ -35,7 +35,6 @@ const short motor_map[] = {
   6,
   7,
   8,
-
   9,
   10,
   11,
@@ -92,26 +91,34 @@ void send_vibrate(unsigned char motor_id, unsigned char magnitude) {
 }
 
 void vibrate(Message* msg) {
+  Serial.println("Got vibrate command.");
   /* Vibrate command format:
    *
-   * [ le-u32:	duration ]
+   * [ le-u16:	duration ]
    * [ u8:	nr_motors ]
    * <[ u8:	motor_id]
    * [ u8:	magnitude ]> (nr_motors)
    */
 
   byte* field = msg->data;
-  #define FIELD_GET(_lhs, _type) _type _lhs = *((_type*) field); field = field + sizeof(_type);
+  #define FIELD_GET(_lhs, _type) \
+    _type _lhs = *((_type*) field); \
+    field = field + sizeof(_type); \
 
-
-  FIELD_GET(duration, u32);
+  FIELD_GET(duration, u16);
   FIELD_GET(nr_motors, u8);
   byte* motor_tuples = field;
+  
+  Serial.println(duration);
+  Serial.println(nr_motors);
 
   for (byte i=0; i < nr_motors; ++i) {
     FIELD_GET(motor_id, u8);
     FIELD_GET(magnitude, u8);
     send_vibrate(motor_id, magnitude);
+    
+    Serial.println(motor_id);
+    Serial.println(magnitude);
   }
 
   delay(duration);

@@ -49,6 +49,9 @@ void setup()
   // Define the appropriate input/output pins
   pinMode(RXPIN, INPUT);
   pinMode(TXPIN, OUTPUT);
+  for (int i=0; i<sizeof(motor_map)/sizeof(short); i++) {
+    pinMode(motor_map[i], OUTPUT); 
+  }
 
   // Say something on the main serial.
   // This is mainly for debug purpose.

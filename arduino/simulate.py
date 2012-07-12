@@ -51,23 +51,15 @@ def getbyte():
     else:
         return struct.unpack('B', u8)[0]
 
-def once_ready(f, tries=0):
-    if not tries:
-        print('Waiting to receive IDLE state...')
-
-    s0 = 0
-    while s0 != 0x2F:
-        s0 = getbyte()
-    s1 = getbyte()
-    if s1 != 0x7F:
-        once_ready(f, tries + 1)
-    s2 = getbyte()
-    if s2 != 0x06:
-        print('Got a valid incoming message header: unsure what to do with it.')
-        once_ready(f, tries + 1)
-    
-    print('Calling ', f)
-    f()
+def once_ready(f):
+    print('Waiting to receive IDLE state...')
+    while conn.inWaiting() < 3:
+        pass
+    if conn.read(3) == b'\x2F\x75\x06':
+        print('Calling ', f)
+        f()
+    else:
+        print('Got garbage.')
 
 def main():
     once_ready(test_echo)

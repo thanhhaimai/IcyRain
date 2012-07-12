@@ -4,14 +4,21 @@ Humans++ Bluetooth Framework.
 
 #HOW TO START
 
-1> Make a folder for this, and go inside that folder, lets call this folder {1}
-2> git clone https://github.com/thanhhaimai/IcyRain.git . (with the dot, and without this note)
-3> Open eclipse
-4> File | Import | Existing Projects into Workspace
-5> Select the Root folder = folder {1} created above
-6> Connect your android phone to your computer with an usb cable
-7> Press F11 (if you're on Mac, let me tell you how sucky the hotkeys scheme is, find the run button then).
-8> Profit!
+1) Make a folder for this, and go inside that folder, lets call this folder {1}
+
+2) git clone https://github.com/thanhhaimai/IcyRain.git . (with the dot, and without this note)
+
+3) Open eclipse
+
+4) File | Import | Existing Projects into Workspace
+
+5) Select the Root folder = folder {1} created above
+
+6) Connect your android phone to your computer with an usb cable
+
+7) Press F11 (if you're on Mac, let me tell you how sucky the hotkeys scheme is, find the run button then).
+
+8) Profit!
 
 #PULL UI
 This is the UI for our Android app. It relies on the MapQuest API. Most of the code that will need to be looked at is in `src/com/mapquest/android/samples/RouteItineraryDemo.java`. 

@@ -99,6 +99,7 @@ class ConnectedThread extends Thread {
           byte checkSum = (byte) mInStream.read();
           for (int i = 0; i < size; i++) {
             checkSum ^= data[i];
+            checkSum %= 48;
           }
           if (checkSum == size) {
             // The data is what we look for, send the obtained bytes to the UI Activity

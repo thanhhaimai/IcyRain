@@ -104,11 +104,27 @@ public class RouteLocationListener extends Activity implements LocationListener 
   private List<Maneuver> maneuvers;
 
   public RouteLocationListener(RouteResponse routeResponse) {
+    Log.d("pullLocation", "checking for bluetooth adapter");
+    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+    // onCreate()
+
+    // If the adapter is null, then Bluetooth is not supported
+    if (mBluetoothAdapter == null) {
+      Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+      Log.d("pullLocation", "mBluetoothAdapter is null");
+      finish();
+      return;
+    }
+
+    // onStart()
     if (!mBluetoothAdapter.isEnabled()) {
+      Log.d("pullLocation", "bluetooth adapter isn't enabled");
       final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
       startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
       // Otherwise, setup the bluetooth session
     } else {
+      Log.d("pullLocation", "bluetooth adapter enabled");
       if (mBluetoothService == null) {
         setupBluetooth();
       }
@@ -267,37 +283,6 @@ public class RouteLocationListener extends Activity implements LocationListener 
         Log.d(TAG, "BT not enabled");
         Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
         finish();
-      }
-    }
-  }
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    // Get local Bluetooth adapter
-    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-    // If the adapter is null, then Bluetooth is not supported
-    if (mBluetoothAdapter == null) {
-      Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-      finish();
-      return;
-    }
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-
-    // If BT is not on, request that it be enabled.
-    // setupBluetooth() will then be called during onActivityResult
-    if (!mBluetoothAdapter.isEnabled()) {
-      final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-      startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-      // Otherwise, setup the bluetooth session
-    } else {
-      if (mBluetoothService == null) {
-        setupBluetooth();
       }
     }
   }

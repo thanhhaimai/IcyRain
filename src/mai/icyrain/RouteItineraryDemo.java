@@ -66,7 +66,7 @@ public class RouteItineraryDemo extends SimpleMap {
       e.printStackTrace();
     }
 
-    routeManager.setDebug(true);
+    // routeManager.setDebug(true);
 
     // callbacks for the routemanager
     routeManager.setRouteCallback(new RouteManager.RouteCallback() {
@@ -84,20 +84,23 @@ public class RouteItineraryDemo extends SimpleMap {
 
       @Override
       public void onSuccess(RouteResponse routeResponse) {
+        Log.d("pullLocation", "success was called");
         clearButton.setVisibility(View.VISIBLE);
         if (showItineraryButton.getVisibility() == View.GONE
           && showMapButton.getVisibility() == View.GONE) {
           showItineraryButton.setVisibility(View.VISIBLE);
         }
 
+        itinerary.setRouteResponse(routeResponse);
+        createRouteButton.setEnabled(true);
+
+        Log.d("pullLocation", "creating location listener");
         // listen for location changes
         locationListener = new RouteLocationListener(routeResponse);
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Log.d("pullLocation", "location listener created");
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 2, locationListener);
-
-        itinerary.setRouteResponse(routeResponse);
-        createRouteButton.setEnabled(true);
       }
 
     });

@@ -173,22 +173,36 @@ public class RouteLocationListener extends Activity implements LocationListener 
       // it's time...
       int maneuverTurn = currManeuver.turnType;
       int direction = turnToDirectionInt(maneuverTurn);
-
-      sendMessage("1011");
+      ByteBuffer buffer;
       // vibrate the arduino
       switch (direction) {
       case 0: // forward
-        // send arduino a "go forward" vibrate
-
+        buffer = ByteBuffer.allocate(11);
+        buffer.putShort((short) 500);
+        buffer.put((byte) 4);
+        buffer.put(new byte[] { 0, 100, 1, 100, 2, 100, 3, 100 });
+        sendBytes(buffer);
         break;
       case 1: // right
-        // send arduino a "go right" vibrate
+        buffer = ByteBuffer.allocate(11);
+        buffer.putShort((short) 500);
+        buffer.put((byte) 4);
+        buffer.put(new byte[] { 4, 100, 5, 100, 6, 100, 7, 100 });
+        sendBytes(buffer);
         break;
       case 2: // down
-        // send arduino a "go backward" vibrate
+        buffer = ByteBuffer.allocate(11);
+        buffer.putShort((short) 500);
+        buffer.put((byte) 4);
+        buffer.put(new byte[] { 8, 100, 9, 100, 10, 100, 11, 100 });
+        sendBytes(buffer);
         break;
       case 3: // left
-        // send arduino a "go left" vibrate
+        buffer = ByteBuffer.allocate(11);
+        buffer.putShort((short) 500);
+        buffer.put((byte) 4);
+        buffer.put(new byte[] { 0, 100, 1, 100, 2, 100, 3, 100 });
+        sendBytes(buffer);
         break;
       default:
         break;
@@ -315,4 +329,13 @@ public class RouteLocationListener extends Activity implements LocationListener 
     }
   }
 
+  private void sendBytes(ByteBuffer bytes) {
+    // Check that we're actually connected before trying anything
+    if (mBluetoothService.getState() != ConnectionState.CONNECTED) {
+      Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    mBluetoothService.write(bytes.array(), MessageOpCode.VIBRATE);
+  }
 }

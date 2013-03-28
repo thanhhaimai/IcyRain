@@ -1,6 +1,6 @@
 #IcyRain
 
-Humans++ Bluetooth Framework.
+Humans++ Bluetooth Framework for Hapwear.
 
 #HOW TO START
 
